@@ -1,68 +1,72 @@
-import { Todo, FilterType, SortType, Theme } from './types/todo';
+import './styles/main.scss';
+import type { Todo, FilterType, SortType, Theme } from './types/todo';
 import { AddTodoForm } from './components/AddTodoForm';
 import { TodoList } from './components/TodoList';
 import { Filters } from './components/Filters';
 import { Stats } from './components/Stats';
 import { storage } from './utils/storage';
 import { helpers } from './utils/helpers';
-import './styles/main.scss';
 
 class SmartTodoApp {
   private todos: Todo[] = [];
   private currentFilter: FilterType = 'all';
   private currentSort: SortType = 'newest';
-  private currentTheme: Theme = 'light';
+  private currentTheme: Theme = 'light'; 
 
-  private addTodoForm: AddTodoForm;
-  private todoList: TodoList;
-  private filters: Filters;
-  private stats: Stats;
-
-  private appContainer: HTMLDivElement;
+  private addTodoForm!: AddTodoForm;
+  private todoList!: TodoList;
+  private filters!: Filters;
+  private stats!: Stats;
 
   constructor() {
-    this.init();
-  }
-
-  private init(): void {
     this.loadData();
     this.createApp();
     this.render();
-    this.bindThemeToggle();
   }
 
   private loadData(): void {
     this.todos = storage.getTodos();
-    this.currentTheme = storage.getTheme();
-    this.applyTheme(this.currentTheme);
   }
 
   private createApp(): void {
-    this.appContainer = document.createElement('div');
-    this.appContainer.className = 'app';
-    
+  const app = document.getElementById('app')!;
+  app.innerHTML = '';
+
+  const container = document.createElement('div');
+  container.className = 'container';
+  
+  container.innerHTML = `
+    <header class="header">
+      <h1>📝 Smart Todo</h1>
+      <p>Умный менеджер ваших задач</p>
+      <button class="theme-toggle" id="theme-toggle">
+        ${this.currentTheme === 'light' ? '🌙' : '☀️'}
+      </button>
+    </header>
+  `;
+
+    // Создаем компоненты ПРАВИЛЬНО
     this.addTodoForm = new AddTodoForm(this.handleAddTodo.bind(this));
-    this.todoList = new TodoList([], this.handleToggleTodo.bind(this), this.handleDeleteTodo.bind(this), this.handleEditTodo.bind(this));
-    this.filters = new Filters(this.handleFilterChange.bind(this), this.handleSortChange.bind(this), this.handleClearCompleted.bind(this));
+    this.todoList = new TodoList(
+      this.handleToggleTodo.bind(this),
+      this.handleDeleteTodo.bind(this), 
+      this.handleEditTodo.bind(this)
+    );
+    this.filters = new Filters(
+      this.handleFilterChange.bind(this),
+      this.handleSortChange.bind(this),
+      this.handleClearCompleted.bind(this)
+    );
     this.stats = new Stats();
 
-    const container = document.createElement('div');
-    container.className = 'container';
-    
-    container.innerHTML = `
-      <header class="header">
-        <h1>📝 Smart Todo</h1>
-        <p>Умный менеджер ваших задач</p>
-      </header>
-    `;
-
+    // Добавляем компоненты
     container.appendChild(this.addTodoForm.render());
     container.appendChild(this.filters.render());
     container.appendChild(this.todoList.render());
     container.appendChild(this.stats.render());
 
-    this.appContainer.appendChild(container);
-    document.body.appendChild(this.appContainer);
+    app.appendChild(container);
+    this.bindThemeToggle();
   }
 
   private render(): void {
@@ -71,7 +75,7 @@ class SmartTodoApp {
     
     this.todoList.update(sortedTodos);
     this.stats.update(this.todos);
-    this.saveData();
+    storage.saveTodos(this.todos);
   }
 
   private handleAddTodo(todoData: Omit<Todo, 'id' | 'createdAt'>): void {
@@ -104,12 +108,12 @@ class SmartTodoApp {
     this.render();
   }
 
-  private handleFilterChange(filter: FilterType): void {
+  private handleFilterChange(filter: 'all' | 'active' | 'completed'): void {
     this.currentFilter = filter;
     this.render();
   }
 
-  private handleSortChange(sort: SortType): void {
+  private handleSortChange(sort: 'newest' | 'oldest' | 'priority'): void {
     this.currentSort = sort;
     this.render();
   }
@@ -120,27 +124,23 @@ class SmartTodoApp {
   }
 
   private bindThemeToggle(): void {
-    const toggleButton = document.createElement('button');
-    toggleButton.className = 'theme-toggle';
+  const toggleButton = document.createElement('button');
+  toggleButton.className = 'theme-toggle';
+  toggleButton.innerHTML = this.currentTheme === 'light' ? '🌙' : '☀️';
+  toggleButton.title = 'Сменить тему';
+
+  toggleButton.addEventListener('click', () => {
+    this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+    this.applyTheme(this.currentTheme);
     toggleButton.innerHTML = this.currentTheme === 'light' ? '🌙' : '☀️';
-    toggleButton.title = 'Сменить тему';
+    storage.saveTheme(this.currentTheme);
+  });
 
-    toggleButton.addEventListener('click', () => {
-      this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-      this.applyTheme(this.currentTheme);
-      toggleButton.innerHTML = this.currentTheme === 'light' ? '🌙' : '☀️';
-      storage.saveTheme(this.currentTheme);
-    });
-
-    document.body.appendChild(toggleButton);
+  document.body.appendChild(toggleButton);
   }
 
   private applyTheme(theme: Theme): void {
     document.documentElement.setAttribute('data-theme', theme);
-  }
-
-  private saveData(): void {
-    storage.saveTodos(this.todos);
   }
 }
 

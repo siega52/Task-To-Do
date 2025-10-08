@@ -1,4 +1,4 @@
-import { Todo, Theme } from '../types/todo'; 
+import type { Todo, Theme } from '../types/todo'; 
 
 const STORAGE_KEYS = {
   TODOS: 'smart-todos',

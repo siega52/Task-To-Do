@@ -29,3 +29,18 @@
     opacity: 0.6;
   }
 }
+
+// Верни старый darken (просто игнорируй предупреждения пока что)
+@mixin button-style($bg-color) {
+  background-color: $bg-color;
+  color: white;
+  border: none;
+  padding: $spacing-sm $spacing-md;
+  border-radius: 4px;
+  cursor: pointer;
+  
+  &:hover:not(:disabled) {
+    background-color: darken($bg-color, 10%);
+    transform: translateY(-1px);
+  }
+}
