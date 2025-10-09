@@ -7,7 +7,6 @@ const STORAGE_KEYS = {
 } as const;
 
 export const storage = {
-  // Todos
   getTodos(): Todo[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.TODOS);
@@ -24,7 +23,6 @@ export const storage = {
     localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(todos));
   },
 
-  // Theme
   getTheme(): Theme {
     return (localStorage.getItem(STORAGE_KEYS.THEME) as Theme) || 'light';
   },

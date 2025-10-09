@@ -47,7 +47,6 @@ export class TodoList {
     });
   }
 
-  // ОДИН метод render
   render(): HTMLElement {
     return this.element;
   }

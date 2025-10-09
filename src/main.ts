@@ -37,7 +37,7 @@ class SmartTodoApp {
   
   container.innerHTML = `
     <header class="header">
-      <h1>📝 Smart Todo</h1>
+      <h1>Smart Todo</h1>
       <p>Умный менеджер ваших задач</p>
       <button class="theme-toggle" id="theme-toggle">
         ${this.currentTheme === 'light' ? '🌙' : '☀️'}
@@ -45,7 +45,6 @@ class SmartTodoApp {
     </header>
   `;
 
-    // Создаем компоненты ПРАВИЛЬНО
     this.addTodoForm = new AddTodoForm(this.handleAddTodo.bind(this));
     this.todoList = new TodoList(
       this.handleToggleTodo.bind(this),
@@ -59,7 +58,6 @@ class SmartTodoApp {
     );
     this.stats = new Stats();
 
-    // Добавляем компоненты
     container.appendChild(this.addTodoForm.render());
     container.appendChild(this.filters.render());
     container.appendChild(this.todoList.render());
@@ -144,5 +142,4 @@ class SmartTodoApp {
   }
 }
 
-// Инициализация приложения
 new SmartTodoApp();

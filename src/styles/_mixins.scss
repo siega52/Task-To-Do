@@ -30,7 +30,6 @@
   }
 }
 
-// Верни старый darken (просто игнорируй предупреждения пока что)
 @mixin button-style($bg-color) {
   background-color: $bg-color;
   color: white;
